@@ -1,0 +1,442 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Install file for New Stuff module.
+ */
+
+
+/**
+ * Implements hook_install().
+ */
+function rotation_main_install() {
+
+  $t = get_t();
+
+/**
+ * Create a Taxonomy Term and add in default term
+ */
+$vocabulary = (object) array(
+  'name' => st('Rotation Locations'),
+  'machine_name' => 'rotation_tax',
+  'description' => st('Add a new location to your website where you want the rotation to show up.'),
+  'module' => 'rotation_main',
+);
+
+taxonomy_vocabulary_save($vocabulary);
+
+// Add a term named 'Home Page' as a default term for rotation_tax Vocabulary
+$vocabulary = taxonomy_vocabulary_machine_name_load('rotation_tax');
+$term = (object) array(
+  'vid' => $vocabulary->vid,
+  'name' => st('Home Page'),
+  'description' => st('Home Page.'),
+  'format' => '', // default
+  'weight' => 0, // default
+);
+
+taxonomy_term_save($term);
+
+
+
+
+/**
+ * Install fields for new content type Rotation Item
+ */
+
+
+  // Define the node type.
+  $rotation_main = array(
+    'type' => 'rotation_main',
+    'name' => $t('Rotation Item'),
+    'base' => 'node_content',
+    'description' => $t('Rotation Items that you can use on your site.'),
+    'body_label' => $t('Content')
+  );
+  
+  //set variables for Rotation Item Content Type
+  variable_set('additional_settings__active_tab_rotation_main', 'edit-menu');
+  variable_set('comment_rotation_main', '1');
+  variable_set('node_options_rotation_main', array('status'));
+  variable_set('node_preview_rotation_main', 0);
+  variable_set('node_submitted_rotation_main', 0);
+  
+  //adds to user menu settings as default
+  //variable_set('menu_options_rotation_main', array('user-menu'));
+  
+  //sets to parent level 0
+  //variable_set('menu_parent_rotation_main', array('user-menu:0'));
+  
+
+
+  // Set defaults.
+  $content_type = node_type_set_defaults($rotation_main);
+  
+  // Add the body field (not part of default).
+  node_add_body_field($content_type);
+
+  // Save the content type.
+  node_type_save($content_type);
+
+  // Set an instance for the body field.
+  $body_instance = field_info_instance('node', 'body', 'rotation_main');
+
+
+  // Create fields.
+  foreach (_rotation_main_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // Create instances of fields.
+  foreach (_rotation_main_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $rotation_main['type'];
+    field_create_instance($instance);
+  }
+  
+/**
+ * Add Weight Settings to Weight Table
+ */ 
+  // Setting Table to update
+  $tableweight = 'weight_settings';
+
+  // Initializing $record array with values.
+  $recordweight = array(
+    'type' => 'rotation_main',
+    'weight_enabled' => 1,
+    'weight_range' => 100,
+    'menu_weight' => 1,
+    'weight_default' => 0,
+  );
+  // Inserting $recordweight (data) into the database table $tableweight.
+  drupal_write_record($tableweight, $recordweight);
+  // Getting the last inserted ID. (id) is the primary key of the table in my scenario.
+  $return = $recordweight ['id'];
+
+  
+/**
+ * Add 5 Nodes to new Content Type Rotation Item
+ */
+
+$i=1;
+while ($i<=5) {
+  //Initialize a node object
+  $node = new stdClass(); // We create a new node object
+  $node->type = "rotation_main"; // Or any other content type you want
+  node_object_prepare($node); // Set some default values.
+  $node->title = "Rotation #" . $i;
+  $node->language = LANGUAGE_NONE; // Or any language code if Locale module is enabled.
+  $node->comment = 1; //2 = comments on, 1 = comments off
+  $node->status = 1; //Published content
+  $node->promote = 0; //do not promote this node to the front page
+  $node->uid = 1; // Or any id you wish 1=admin
+  
+  
+   
+  // Let's add standard body field
+  $node->body[$node->language][0]['value'] = '<p>Edit this text to change what Rotation #' . $i . ' text says.</p>';
+  //$node->body[$node->language][0]['summary'] = 'Here goes a summary';  //Removed Summary Field
+  $node->body[$node->language][0]['format'] = 'filtered_html'; // If field has a format, you need to define it. Here we define a default plain_text, filtered_html or full_html format for a body field
+  
+  
+  
+  // Let's add some Custome Fields 
+  $node->rotation_main_url[$node->language][0]['value'] = '/node';
+  $node->rotation_main_new_window[$node->language][0]['value'] = 'no';
+  $node->rotation_main_caption[$node->language][0]['value'] = 'Caption #' . $i;
+  
+  
+  $modulepath = drupal_get_path('module', 'rotation_main');    
+  $imgpath = $modulepath . '/images/0' . $i . '.jpg';
+  //$imgpath = $modulepath . '/images/0' . $i;
+  $thumbpath = $modulepath . '/images/thumbs/frame-0' . $i . '.jpg';
+  //$thumbpath = $modulepath . '/images/thumbs/frame-0' . $i;
+  
+  //ADD IMAGES
+  //Add Image 1
+  $file_path = drupal_realpath($imgpath);
+  $file = (object) array(
+        'uid' => 1,
+        'uri' => $file_path,
+        'filemime' => file_get_mimetype((string)$file_path),
+        'status' => 1,
+  );
+  // You can specify a subdirectory, e.g. public://foo/
+  $file = file_copy($file, 'public://');
+  $node->rotation_main_large_image[$node->language][0] = (array) $file;
+
+  
+  //Reset File and file_path for next image.
+  $file = '';
+  $file_path = '';
+
+  
+  //Add Image 2
+  $file_path = drupal_realpath($thumbpath);
+  $file = (object) array(
+        'uid' => 1,
+        'uri' => $file_path,
+        'filemime' => file_get_mimetype($file_path),
+        'status' => 1,
+  );
+  // You can specify a subdirectory, e.g. public://foo/
+  $file = file_copy($file, 'public://');
+  $node->rotation_main_thumb_image[$node->language][0] = (array) $file;
+
+  
+  //$fieldThumb = 'rotation_main_thumb_image[$node->language][0]';
+
+
+
+  
+  //Add a term to a node
+  $taxterm = taxonomy_get_term_by_name('Home Page');
+    $taxterm_keys = array_keys($taxterm);
+    $node->rotation_main_category[$node->language][]['tid'] = $taxterm_keys[0];
+  
+
+  $node = node_submit($node); // Prepare node for a submit
+  node_save($node); // After this call we'll get a nid
+  
+  
+
+  
+  
+  $i++;
+  }
+ 
+  
+  //figure out which nid's are in 'rotation_main' to update weight
+  $updateweight = db_query("SELECT nid FROM {node} WHERE type = 'rotation_main'");
+  
+  $iweight = 1;
+  
+  //loop through results and update weight
+  foreach ($updateweight as $item) {
+  
+  $newitem = intval($item->nid);
+  
+    //Updated Weight Module Weight Fields
+    $addweight = db_insert('weight_weights')
+    ->fields(array(
+      'entity_id' => $newitem,
+      'entity_type' => 'node',
+      'weight' => $iweight,
+    ))
+    ->execute();
+  
+  $iweight++;
+  
+  }
+  
+}
+
+
+/**
+ * Return an array of fields, to be used during the install and uninstall process.
+ */
+function _rotation_main_installed_fields() {
+ return array(
+    'rotation_main_url' => array(
+      'field_name'  => 'rotation_main_url',
+      'type'        => 'text',
+      'cardinality' => 1,
+    ),
+    'rotation_main_new_window' => array(
+      'field_name' => 'rotation_main_new_window',
+      'type' => 'list_text',
+      'cardinality' => 1,
+      'settings' => array(
+      'allowed_values' => array(
+        'no' => t('No'),
+        'yes' => t('Yes'),
+        ),
+      ),
+    ),
+    'rotation_main_large_image' => array(
+      'field_name' => 'rotation_main_large_image',
+      'type'       => 'image',
+      'cardinality' => 1,
+    ),
+    'rotation_main_thumb_image' => array(
+      'field_name' => 'rotation_main_thumb_image',
+      'type'       => 'image',
+      'cardinality' => 1,
+    ),
+    'rotation_main_caption' => array(
+      'field_name' => 'rotation_main_caption',
+      'type'       => 'text',
+      'cardinality' => 1,
+    ),
+    'rotation_main_category' => array(
+      'field_name' => 'rotation_main_category',
+      'type' => 'taxonomy_term_reference',
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'settings' => array(
+        'allowed_values' => array(
+            0 => array(
+                'vocabulary' => 'rotation_tax',
+                'parent' => 0,
+            ),
+          ),
+        ),
+    ),
+  );
+}
+
+
+
+/**
+ * Return an array of instances, to be used during the install and uninstall process.
+ */
+function _rotation_main_installed_instances() {
+  $t = get_t();
+  
+  //find examples you can use for type here. hook_field_widget_info() to see all types  
+  //copy above field type and label them for Drupal
+  return array(
+    'rotation_main_url' => array(
+      'field_name'  => 'rotation_main_url',
+      'label' => $t('URL'),
+      'type'        => 'text',
+      'required'    => TRUE,
+      'description' => $t('URL where you want this rotation item to go.'),
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+    ),
+    'rotation_main_new_window' => array(
+      'field_name'  => 'rotation_main_new_window',
+      'label' => $t('Open link in new window?'),
+      'required'    => FALSE,
+      'description' => $t('If your rotation links an external website usually you would want that link to open into a new window.  This will allow your website to still be available to come back too.'),
+      'widget'      => array(
+        'type'    => 'options_select',
+      ),
+    ),
+    'rotation_main_large_image' => array(
+      'field_name'  => 'rotation_main_large_image',
+      'label'       => $t('Large Image'),
+      'required'    => TRUE,
+      'description' => $t('Large Image matches Height and Width as you set in the configuration settings on the <a href="/admin/config/content/rotation">Rotation Module</a> admin page'),
+      'widget' => array(
+        'type'    => 'image',
+      ),
+    ),
+    'rotation_main_thumb_image' => array(
+      'field_name'  => 'rotation_main_thumb_image',
+      'label'       => $t('Thumbnail Image'),
+      'required'    => FALSE,
+      'description' => $t('Thumbnail Image matches Height and Width as you set in the configuration settings on the <a href="/admin/config/content/rotation">Rotation Module</a> admin page'),
+      'widget' => array(
+        'type'    => 'image',
+      ),
+    ),
+    'rotation_main_caption' => array(
+      'field_name'  => 'rotation_main_caption',
+      'label' => $t('Caption'),
+      'type'        => 'text_with_summary',
+      'required'    => FALSE,
+      'description' => $t('Captions need to be turned on using the configuration settings on the <a href="/admin/config/content/rotation">Rotation Module</a> admin page.  You might also need to adjust the height of the caption on this page as well depending on the length of the caption.'),
+      'widget'      => array(
+        'type'    => 'text_textarea_with_summary',
+      ),
+    ),
+    'rotation_main_category' => array(
+      'field_name'  => 'rotation_main_category',
+      'label' => $t('Location:'),
+      'type'        => 'taxonomy_term_reference',
+      'description' => $t('This will tell Drupal which locations you want this to display it.  Add more Locations by adding additional taxonomy terms to the <a href="/admin/structure/taxonomy/rotation_tax">"Rotation Location" vocabulary</a>. If you add multiple locations you must updated the "Total Number of Rotations" field in the configuration settings on the <a href="/admin/config/content/rotation">Rotation Module</a> admin page at the top.'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'options_buttons',
+        ),
+      'settings' => array(
+        'user_register_form' => TRUE,
+        ),
+      'display' => array(
+        'default' => array(
+          'type' => 'taxonomy_term_reference_plain',
+            ),
+        ),
+    ),
+  );
+}
+
+
+/**
+ * Implements hook_uninstall().
+ *
+ */
+function rotation_main_uninstall() {
+
+  //figure out which nid's are in 'rotation_main' to delete weight_weight rows
+  $deleteweight = db_query("SELECT nid FROM {node} WHERE type = 'rotation_main'");
+  
+  //loop through results and update weight
+  foreach ($deleteweight as $item) {
+  
+    //Delete Weight_Settings
+    $weight_deleted = db_delete('weight_weight')
+    ->condition('entity_id', $item->nid)
+    ->execute();
+
+  }
+  
+  //figure out which id is 'rotation_main' to delete from weight_settings
+  $resultweight = db_query("SELECT id FROM {weight_settings} WHERE type = 'rotation_main'");
+
+  //loop through results to get id from weight_settings
+  foreach ($resultweight as $item) {
+    $weightid = $item->id;
+  }
+
+  //Delete Weight_Settings
+  $weight_deleted = db_delete('weight_settings')
+  ->condition('id', $weightid)
+  ->execute();
+
+  //remove vocabulary
+  $query = 'SELECT v.vid FROM {taxonomy_vocabulary} v WHERE v.machine_name = :machine_name';
+  $vid = db_query($query, array(':machine_name' => 'rotation_tax'))->fetchField();
+  if (!empty($vid)) {
+    taxonomy_vocabulary_delete($vid);
+  }
+  
+  
+  //Delete Variables
+  variable_del('additional_settings__active_tab_rotation_main');
+  variable_del('comment_rotation_main');
+  variable_del('node_options_rotation_main');
+  variable_del('node_preview_rotation_main');
+  variable_del('node_submitted_rotation_main');
+
+
+
+  // Delete all nodes of this type.
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => 'rotation_main'));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+  node_delete_multiple($nids);
+
+  // Delete fields.
+  foreach (array_keys(_rotation_main_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  // Delete field instances.
+  $instances = field_info_instances('node', 'rotation_main');
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+  
+
+  // Delete the content type.
+  node_type_delete('rotation_main');
+
+  // Purge all remaining field info.
+  field_purge_batch(1000);
+}

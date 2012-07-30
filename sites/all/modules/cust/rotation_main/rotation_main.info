@@ -1,0 +1,12 @@
+; $Id: $
+
+name = Rotation Main
+description = Allows you to easily add a jquery css3 rotation to your durpal website.
+package = Rotation Main
+core = 7.x
+configure = admin/config/content/rotation
+files[] = rotation_main.module
+files[] = rotation_main.admin.inc
+dependencies[] = block
+dependencies[] = weight
+

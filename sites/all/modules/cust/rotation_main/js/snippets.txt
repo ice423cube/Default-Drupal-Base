@@ -1,0 +1,105 @@
+		panel_width: 700,
+		panel_height: 300,
+		transition_interval: 12000,
+		background_color: '#000000',
+		border: 'none',
+		overlay_width: 300,
+		overlay_height: 300,
+		overlay_position: 'right',
+		overlay_text_color: '#ffffff',
+		overlay_color: '#000000',
+		overlay_opacity: 0.8,
+		frame_width: 100,
+		frame_height: 100,
+		filmstrip_border_color: '#ffffff',
+		filmstrip_arrow_color: '#ffffff',
+		filmstrip_position: 'bottom'
+		
+		
+		
+		
+		panel_width: Drupal.settings.rotationMain.rotation_main_width,
+		panel_height: Drupal.settings.rotationMain.rotation_main_height,
+		transition_interval: Drupal.settings.rotationMain.rotation_main_transition_interval,
+		background_color: 'Drupal.settings.rotationMain.rotation_main_background_color',
+		border: 'Drupal.settings.rotationMain.rotation_main_border',
+		overlay_width: Drupal.settings.rotationMain.rotation_main_overlay_width,
+		overlay_height: Drupal.settings.rotationMain.rotation_main_overlay_height,
+		overlay_position: 'Drupal.settings.rotationMain.rotation_main_overlay_position',
+		overlay_text_color: 'Drupal.settings.rotationMain.rotation_main_overlay_text_color',
+		overlay_color: 'Drupal.settings.rotationMain.rotation_main_overlay_color',
+		overlay_opacity: Drupal.settings.rotationMain.rotation_main_overlay_opacity,
+		frame_width: Drupal.settings.rotationMain.rotation_main_frame_width,
+		frame_height: Drupal.settings.rotationMain.rotation_main_frame_height,
+		filmstrip_border_color: 'Drupal.settings.rotationMain.rotation_main_filmstrip_border_color',
+		filmstrip_arrow_color: 'Drupal.settings.rotationMain.rotation_main_filmstrip_arrow_color',
+		filmstrip_position: 'Drupal.settings.rotationMain.rotation_main_filmstrip_position' 
+		
+		
+		
+		
+		
+		
+		
+		alert(Drupal.settings.rotationMain.rotation_main_width);
+		alert(Drupal.settings.rotationMain.rotation_main_height);
+		alert(Drupal.settings.rotationMain.rotation_main_transition_interval);
+		alert(Drupal.settings.rotationMain.rotation_main_background_color);
+		alert(Drupal.settings.rotationMain.rotation_main_border);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_width);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_height);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_position);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_text_color);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_color);
+		alert(Drupal.settings.rotationMain.rotation_main_overlay_opacity);
+		alert(Drupal.settings.rotationMain.rotation_main_frame_width);
+		alert(Drupal.settings.rotationMain.rotation_main_frame_height);
+		alert(Drupal.settings.rotationMain.rotation_main_filmstrip_border_color);
+		alert(Drupal.settings.rotationMain.rotation_main_filmstrip_arrow_color);
+		alert(Drupal.settings.rotationMain.rotation_main_filmstrip_position);
+		
+		
+		
+		
+		alert(opts.panel_width);
+		alert(opts.panel_height);
+		alert(opts.transition_interval);
+		//alert(opts.background_color);
+		//alert(opts.border);
+		alert(opts.overlay_width);
+		alert(opts.overlay_height);
+		//alert(opts.overlay_position);
+		//alert(opts.overlay_text_color);
+		//alert(opts.overlay_color);
+		alert(opts.overlay_opacity);
+		alert(opts.frame_width);
+		alert(opts.frame_height);
+		//alert(opts.filmstrip_border_color);
+		//alert(opts.filmstrip_arrow_color);
+		//alert(opts.filmstrip_position);
+		
+		
+			alert(typeof(opts.panel_width));
+					alert(typeof(opts.panel_height));
+					alert(typeof(opts.transition_interval));
+					alert(typeof(opts.background_color));
+					alert(typeof(opts.border));
+					alert(typeof(opts.overlay_width));
+					alert(typeof(opts.overlay_height));
+					alert(typeof(opts.overlay_position));
+					alert(typeof(opts.overlay_text_color));
+					alert(typeof(opts.overlay_color));
+					alert(typeof(opts.overlay_opacity));
+					alert(typeof(opts.frame_width));
+					alert(typeof(opts.frame_height));
+					alert(typeof(opts.filmstrip_border_color));
+					alert(typeof(opts.filmstrip_arrow_color));
+					alert(typeof(opts.filmstrip_position));	
+		
+		
+    //parseInt()
+	//String()
+	//typeof()
+	
+	//debugging
+	drupal_set_message(var_export(debug_backtrace(), TRUE));
