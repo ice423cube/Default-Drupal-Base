@@ -336,12 +336,8 @@ function rotation_main_block_save($delta, $edit) {
 function rotation_main_block_view($delta) {
  
 
-    //don't need
-    //$rt_getnids = rotation_main_get_nids_from_tax_for_block($delta, $tax_name = NULL);
     $rt_gettaxid = rotation_main_get_nids_from_tax_for_block($delta, $tax_name = NULL);
     
-    //$rt_getnids =  variable_get('rotation_main_taxname_' . $delta);
-
     $build_rotation = rotation_main_buildHTMLroation($rt_gettaxid);
   
     $block['content'] = $build_rotation;
